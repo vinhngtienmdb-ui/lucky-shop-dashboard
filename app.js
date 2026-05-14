@@ -370,10 +370,10 @@ const calculate = () => {
     if (netDaily1 > 0) {
         const daysToCover = Math.ceil(needToCover / netDaily1);
         calc.s_linearDays.innerText = `Khoảng ${daysToCover} ngày`;
-        calc.s_linearDays.className = "stat-val text-green";
+        calc.s_linearDays.className = "breakeven-value";
     } else {
         calc.s_linearDays.innerText = "Không thể đạt";
-        calc.s_linearDays.className = "stat-val text-red";
+        calc.s_linearDays.className = "breakeven-value";
     }
 
     // Timeline Loop 365 Days
@@ -420,9 +420,9 @@ const calculate = () => {
     const roi = needToCover > 0 ? (totalCash - needToCover) / needToCover : 0;
     calc.s_roi.innerText = formatPercent(roi);
     if (roi >= 0) {
-        calc.s_roi.className = "stat-val text-green";
+        calc.s_roi.className = "val text-purple";
     } else {
-        calc.s_roi.className = "stat-val text-red";
+        calc.s_roi.className = "val text-danger";
     }
 };
 
