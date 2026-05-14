@@ -373,15 +373,24 @@ body {
     margin-bottom: 0.5rem;
 }
 .breakeven-value {
-    font-size: 2.25rem;
-    font-weight: 700;
-    color: var(--primary);
+    font-size: 3rem;
+    font-weight: 900;
+    color: #ef4444; /* Strong Red */
+    text-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
     margin-bottom: 0.25rem;
+    letter-spacing: -1px;
+    animation: pulse-text 2s infinite;
+}
+@keyframes pulse-text {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); text-shadow: 0 4px 25px rgba(239, 68, 68, 0.6); }
+    100% { transform: scale(1); }
 }
 .breakeven-sub {
-    font-size: 0.8rem;
-    color: #888;
+    font-size: 0.85rem;
+    color: #b8860b;
     font-style: italic;
+    font-weight: 600;
 }
 
 /* Stat Cards (4-column grid) */
@@ -400,6 +409,9 @@ body {
     text-align: center;
     transition: all 0.3s ease;
     border-top: 4px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 .stat-card:hover {
     transform: translateY(-5px);
@@ -408,7 +420,21 @@ body {
 .stat-card.highlight-gold { border-top-color: var(--gold); }
 .stat-card.highlight-primary { border-top-color: var(--primary); }
 .stat-card.highlight-success { border-top-color: var(--success); }
-.stat-card.highlight-purple { border-top-color: #8b5cf6; }
+
+/* Supercharged ROI Card */
+.stat-card.highlight-purple { 
+    background: linear-gradient(135deg, #4c1d95 0%, #7e22ce 100%);
+    border: none;
+    border-top: 4px solid #d8b4fe;
+    box-shadow: 0 10px 25px rgba(126, 34, 206, 0.3);
+    transform: scale(1.03); /* Make it slightly bigger by default */
+}
+.stat-card.highlight-purple:hover {
+    transform: scale(1.05) translateY(-5px);
+    box-shadow: 0 15px 35px rgba(126, 34, 206, 0.5);
+}
+.stat-card.highlight-purple h4 { color: #e9d5ff; }
+.stat-card.highlight-purple .sub { color: #d8b4fe; }
 
 .stat-card h4 {
     font-size: 0.8rem;
@@ -422,6 +448,12 @@ body {
     font-size: 1.65rem;
     font-weight: 800;
     margin-bottom: 0.4rem;
+}
+/* Force ROI value to be bigger and glowing */
+.stat-card.highlight-purple .val {
+    font-size: 2.25rem !important;
+    color: #ffffff !important;
+    text-shadow: 0 0 15px rgba(216, 180, 254, 0.8);
 }
 .stat-card .sub {
     font-size: 0.75rem;
