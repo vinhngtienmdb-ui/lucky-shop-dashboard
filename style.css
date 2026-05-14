@@ -421,20 +421,11 @@ body {
 .stat-card.highlight-primary { border-top-color: var(--primary); }
 .stat-card.highlight-success { border-top-color: var(--success); }
 
-/* Supercharged ROI Card */
 .stat-card.highlight-purple { 
-    background: linear-gradient(135deg, #4c1d95 0%, #7e22ce 100%);
-    border: none;
-    border-top: 4px solid #d8b4fe;
-    box-shadow: 0 10px 25px rgba(126, 34, 206, 0.3);
-    transform: scale(1.03); /* Make it slightly bigger by default */
+    border-top-color: #8b5cf6;
 }
-.stat-card.highlight-purple:hover {
-    transform: scale(1.05) translateY(-5px);
-    box-shadow: 0 15px 35px rgba(126, 34, 206, 0.5);
-}
-.stat-card.highlight-purple h4 { color: #e9d5ff; }
-.stat-card.highlight-purple .sub { color: #d8b4fe; }
+.stat-card.highlight-purple h4 { color: var(--text-muted); }
+.stat-card.highlight-purple .sub { color: var(--text-muted); }
 
 .stat-card h4 {
     font-size: 0.8rem;
@@ -449,11 +440,9 @@ body {
     font-weight: 800;
     margin-bottom: 0.4rem;
 }
-/* Force ROI value to be bigger and glowing */
+/* ROI value slightly bigger */
 .stat-card.highlight-purple .val {
-    font-size: 2.25rem !important;
-    color: #ffffff !important;
-    text-shadow: 0 0 15px rgba(216, 180, 254, 0.8);
+    font-size: 2rem !important;
 }
 .stat-card .sub {
     font-size: 0.75rem;
