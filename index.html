@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Shop - Financial Analytics Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <span class="icon">📈</span>
+                <h1>Lucky Shop Analytics</h1>
+            </div>
+            <div class="user-profile">
+                <span class="status-indicator"></span> Live Projection Mode
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-grid">
+            
+            <!-- Section 1: Inputs & Parameters -->
+            <section class="top-row">
+                <!-- Card A: Thông số đầu vào -->
+                <div class="card param-card card-a">
+                    <h2 class="card-title">⚙️ Thông Số Đầu Vào</h2>
+                    <div class="input-list">
+                        <div class="input-group">
+                            <label>Giá sản phẩm</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="p_price" value="4000000">
+                                <span class="unit">VNĐ</span>
+                            </div>
+                        </div>
+                        <div class="calc-group">
+                            <label>Giá gom bao nhóm</label>
+                            <div class="calc-val"><span id="c_groupPrice">0</span> <span class="unit">VNĐ</span></div>
+                        </div>
+                        <div class="input-group">
+                            <label>Số lượt</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="p_turns" value="20">
+                                <span class="unit">lượt</span>
+                            </div>
+                        </div>
+                        <div class="calc-group">
+                            <label>Giá 1 sản phẩm</label>
+                            <div class="calc-val"><span id="c_unitPrice">0</span> <span class="unit">VNĐ</span></div>
+                        </div>
+                        <div class="calc-group">
+                            <label>Phiếu khấu trừ</label>
+                            <div class="calc-val text-primary"><span id="c_deduction">0</span> <span class="unit">VNĐ</span></div>
+                        </div>
+                        <div class="calc-group highlight-box">
+                            <label>Tổng tiền bỏ ra</label>
+                            <div class="calc-val text-danger fw-bold"><span id="c_totalInvest">0</span> <span class="unit">VNĐ</span></div>
+                        </div>
+                        <div class="input-group mt-2">
+                            <label>Tỷ lệ bán lại SP</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="p_resellRate" value="80">
+                                <span class="unit">%</span>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Tỷ lệ lì xì / ngày</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="p_dailyLuckyRate" value="0.12" step="0.01">
+                                <span class="unit">%</span>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Hệ số số dư lì xì</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="p_luckyMul" value="5.5" step="0.1">
+                                <span class="unit">lần</span>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Phiếu sử dụng mới</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="p_newTickets" value="0">
+                                <span class="unit">VNĐ</span>
+                            </div>
+                        </div>
+                        <div class="calc-group highlight-box bg-gold mt-2">
+                            <label>Số dư lì xì ban đầu</label>
+                            <div class="calc-val text-gold fw-bold"><span id="c_luckyBalance">0</span> <span class="unit">VNĐ</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card B: Hoa Hồng & Phân Phối -->
+                <div class="card param-card card-b">
+                    <h2 class="card-title">🎁 Tỷ Lệ Hoa Hồng</h2>
+                    <div class="commission-list">
+                        <div class="comm-header">
+                            <span>Loại Hoa Hồng</span>
+                            <span>Tỷ Lệ (%)</span>
+                            <span>Số Tiền (VNĐ)</span>
+                        </div>
+                        <div class="comm-item">
+                            <div class="comm-label">HH tự tham gia</div>
+                            <div class="comm-input"><input type="number" id="p_b_rate1" value="0"></div>
+                            <div class="comm-val" id="b_amt1">0</div>
+                        </div>
+                        <div class="comm-item">
+                            <div class="comm-label">HH trực tiếp</div>
+                            <div class="comm-input"><input type="number" id="p_b_rate2" value="10"></div>
+                            <div class="comm-val" id="b_amt2">0</div>
+                        </div>
+                        <div class="comm-item">
+                            <div class="comm-label">HH gián tiếp</div>
+                            <div class="comm-input"><input type="number" id="p_b_rate3" value="5"></div>
+                            <div class="comm-val" id="b_amt3">0</div>
+                        </div>
+                        <div class="comm-item">
+                            <div class="comm-label">HH nhân viên</div>
+                            <div class="comm-input"><input type="number" id="p_b_rate4" value="0"></div>
+                            <div class="comm-val" id="b_amt4">0</div>
+                        </div>
+                        <div class="comm-item">
+                            <div class="comm-label">HH quản lý</div>
+                            <div class="comm-input"><input type="number" id="p_b_rate5" value="0"></div>
+                            <div class="comm-val" id="b_amt5">0</div>
+                        </div>
+                        <div class="comm-item">
+                            <div class="comm-label">HH giám đốc</div>
+                            <div class="comm-input"><input type="number" id="p_b_rate6" value="15"></div>
+                            <div class="comm-val" id="b_amt6">0</div>
+                        </div>
+                        <div class="comm-item">
+                            <div class="comm-label">HH tổng giám đốc</div>
+                            <div class="comm-input"><input type="number" id="p_b_rate7" value="0"></div>
+                            <div class="comm-val" id="b_amt7">0</div>
+                        </div>
+                        <div class="comm-summary total-hh">
+                            <div>Tổng HH & Lương</div>
+                            <div class="fw-bold text-gold" id="b_totalHH">0</div>
+                        </div>
+                        <div class="comm-summary">
+                            <div>Bán lại sản phẩm (<span id="b_resellRate">0%</span>)</div>
+                            <div id="b_resellAmt">0</div>
+                        </div>
+                        <div class="comm-summary">
+                            <div>Gốc hoàn về (Bao nhóm)</div>
+                            <div id="b_capitalReturned">0</div>
+                        </div>
+                        <div class="comm-summary total-instant">
+                            <div>Tổng Hoàn Ngay Lập Tức</div>
+                            <div class="fw-bold text-success" id="b_instantTotal">0</div>
+                        </div>
+                        <div class="comm-summary need-cover">
+                            <div>Phần Cần Bù (Lì xì)</div>
+                            <div class="fw-bold text-primary" id="b_needToCover">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card C: Cấp Bậc (Optional config) -->
+                <div class="card param-card card-c">
+                    <h2 class="card-title">🎖️ Thông Số Cấp Bậc</h2>
+                    <p class="subtitle-note">Chỉ mang tính chất tham khảo cơ cấu</p>
+                    <div class="rank-list">
+                        <div class="rank-header">
+                            <span>Cấp Bậc</span>
+                            <span>HH Phân Phối</span>
+                            <span>HH Cấp Bậc</span>
+                        </div>
+                        <div class="rank-item">
+                            <div class="rank-label">Tổng GĐ</div>
+                            <div class="rank-input"><input type="number" id="c_dist_tgd" value="0"></div>
+                            <div class="rank-input"><input type="number" id="c_rank_tgd" value="0"></div>
+                        </div>
+                        <div class="rank-item">
+                            <div class="rank-label">Giám đốc</div>
+                            <div class="rank-input"><input type="number" id="c_dist_gd" value="0"></div>
+                            <div class="rank-input"><input type="number" id="c_rank_gd" value="5"></div>
+                        </div>
+                        <div class="rank-item">
+                            <div class="rank-label">Quản lý</div>
+                            <div class="rank-input"><input type="number" id="c_dist_ql" value="5"></div>
+                            <div class="rank-input"><input type="number" id="c_rank_ql" value="5"></div>
+                        </div>
+                        <div class="rank-item">
+                            <div class="rank-label">Nhân viên</div>
+                            <div class="rank-input"><input type="number" id="c_dist_nv" value="10"></div>
+                            <div class="rank-input"><input type="number" id="c_rank_nv" value="5"></div>
+                        </div>
+                        <div class="rank-item">
+                            <div class="rank-label">Khách hàng</div>
+                            <div class="rank-input"><input type="number" id="c_dist_kh" value="0"></div>
+                            <div class="rank-input"><input type="number" id="c_rank_kh" value="0"></div>
+                        </div>
+                        <div class="rank-summary">
+                            <div>Total</div>
+                            <div id="c_dist_total" class="fw-bold text-center">0%</div>
+                            <div id="c_rank_total" class="fw-bold text-center">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Dashboard Overview Cards -->
+            <div class="section-divider">
+                <h2>Phân Tích Điểm Hòa Vốn</h2>
+                <p>Tổng quan tài chính & Các chỉ số cốt lõi</p>
+            </div>
+
+            <section class="overview-cards">
+                <div class="dash-card danger">
+                    <div class="icon">💰</div>
+                    <div class="content">
+                        <h3>Tổng Vốn Bỏ Ra</h3>
+                        <div class="value" id="d_totalInvest">0 đ</div>
+                        <div class="note">Giá gom + Phiếu KT</div>
+                    </div>
+                </div>
+                <div class="dash-card success">
+                    <div class="icon">📦</div>
+                    <div class="content">
+                        <h3>Thu Về Bán Lại SP</h3>
+                        <div class="value" id="d_resellReturn">0 đ</div>
+                        <div class="note">Trích từ giá gốc</div>
+                    </div>
+                </div>
+                <div class="dash-card warning">
+                    <div class="icon">🎁</div>
+                    <div class="content">
+                        <h3>Tổng HH & Hoàn Về</h3>
+                        <div class="value" id="d_totalHH">0 đ</div>
+                        <div class="note">Hoa hồng phát sinh lập tức</div>
+                    </div>
+                </div>
+                <div class="dash-card primary">
+                    <div class="icon">⚖️</div>
+                    <div class="content">
+                        <h3>Phần Cần Bù Lì Xì</h3>
+                        <div class="value" id="d_needToCover">0 đ</div>
+                        <div class="note">Phần còn lại sau thu hồi</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Detailed Stats -->
+            <section class="stats-cards-grid">
+                <div class="stat-group">
+                    <div class="stat-box">
+                        <h4>Tỷ Lệ Hoàn Vốn Ngay Lập Tức</h4>
+                        <div class="val text-primary" id="s_instantRate">0.0%</div>
+                        <div class="sub">Phần thu về / Tổng vốn</div>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Tỷ Lệ Cần Bù Bằng Lì Xì</h4>
+                        <div class="val text-danger" id="s_coverRate">0.0%</div>
+                        <div class="sub">Phần chờ / Tổng vốn</div>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Số Dư Lì Xì Ban Đầu</h4>
+                        <div class="val text-gold" id="s_initialBal">0 đ</div>
+                        <div class="sub">Phiếu KT × Hệ số</div>
+                    </div>
+                </div>
+                <div class="stat-group">
+                    <div class="stat-box">
+                        <h4>Lì Xì Phát Sinh Mỗi Ngày</h4>
+                        <div class="val" id="s_dailyLixi1">0 đ</div>
+                        <div class="sub">Tại ngày 1</div>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Phiếu Sử Dụng Mỗi Ngày</h4>
+                        <div class="val" id="s_dailyTickets">0 đ</div>
+                        <div class="sub">Mệnh giá 1 phiếu đổi</div>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Lì Xì Ròng Mỗi Ngày</h4>
+                        <div class="val fw-bold" id="s_netDailyLixi1">0 đ</div>
+                        <div class="sub">Tại ngày 1</div>
+                    </div>
+                </div>
+                <div class="stat-group">
+                    <div class="stat-box">
+                        <h4>Ước Tính Điểm Hòa Vốn</h4>
+                        <div class="val text-primary" id="s_linearDays">0 ngày</div>
+                        <div class="sub">Tuyến tính (gần đúng)</div>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Tổng Lì Xì Tích Lũy (1 Năm)</h4>
+                        <div class="val text-success" id="s_accLixi">0 đ</div>
+                        <div class="sub">Cộng dồn 365 ngày</div>
+                    </div>
+                    <div class="stat-box">
+                        <h4>Lợi Nhuận Ròng (ROI)</h4>
+                        <div class="val text-success" id="s_roi">0.0%</div>
+                        <div class="sub">Sau 365 ngày</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 4: 365 Days Projection -->
+            <section class="projection-table-section">
+                <div class="table-header">
+                    <h3>📅 Lịch Trình Tích Lũy Dòng Tiền (365 Ngày)</h3>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Ngày</th>
+                                <th>Số Dư Đầu Ngày</th>
+                                <th>Lì Xì Phát Sinh</th>
+                                <th>Phiếu Sử Dụng</th>
+                                <th>Hoa Hồng Sinh Ra</th>
+                                <th>Tiền Mặt Tích Lũy</th>
+                                <th>Số Dư Cuối Ngày</th>
+                                <th>Trạng Thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timelineBody">
+                            <!-- JS Inject -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
