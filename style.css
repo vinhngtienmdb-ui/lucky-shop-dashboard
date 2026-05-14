@@ -21,6 +21,9 @@
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --radius-md: 0.5rem;
     --radius-lg: 0.75rem;
+
+    /* Master width — single source of truth */
+    --content-width: 1100px;
 }
 
 * {
@@ -48,11 +51,13 @@ body {
 .bg-gold { background-color: var(--gold-light); border-left: 3px solid var(--gold); }
 .mt-2 { margin-top: 1rem; }
 
-/* Layout */
+/* ======================================================
+   LAYOUT — Everything constrained to --content-width
+   ====================================================== */
 .app-container {
-    max-width: 1400px;
+    max-width: var(--content-width);
     margin: 0 auto;
-    padding: 0 1rem 2rem;
+    padding: 0 1.5rem 2rem;
 }
 
 /* Header */
@@ -98,11 +103,13 @@ body {
     100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
-/* Top Row Grid */
+/* ======================================================
+   SECTION 1: Top Row — 3 Cards
+   ====================================================== */
 .top-row {
     display: grid;
-    grid-template-columns: 1.2fr 1.1fr 1fr;
-    gap: 1.5rem;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.25rem;
     margin-bottom: 2rem;
 }
 
@@ -110,14 +117,14 @@ body {
     background: var(--bg-card);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
-    padding: 1.5rem;
+    padding: 1.25rem;
     border: 1px solid var(--border-light);
 }
 
 .card-title {
-    font-size: 1.125rem;
+    font-size: 1.05rem;
     font-weight: 600;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
     color: var(--text-main);
     border-bottom: 1px solid var(--border-light);
     padding-bottom: 0.75rem;
@@ -125,12 +132,14 @@ body {
 .subtitle-note {
     font-size: 0.75rem;
     color: var(--text-muted);
-    margin-top: -1rem;
+    margin-top: -0.75rem;
     margin-bottom: 1rem;
     font-style: italic;
 }
 
-/* Input Styles */
+/* ======================================================
+   Input Styles
+   ====================================================== */
 .input-group, .calc-group {
     display: flex;
     justify-content: space-between;
@@ -144,6 +153,7 @@ body {
 .input-group label, .calc-group label {
     font-weight: 500;
     color: var(--text-muted);
+    font-size: 0.85rem;
 }
 .input-wrapper {
     display: flex;
@@ -151,7 +161,7 @@ body {
     background: var(--bg-main);
     border-radius: var(--radius-md);
     padding: 0.25rem 0.5rem;
-    width: 140px;
+    width: 130px;
 }
 .input-wrapper input {
     width: 100%;
@@ -162,16 +172,17 @@ body {
     font-weight: 600;
     color: var(--primary);
     outline: none;
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 .input-wrapper .unit, .calc-group .unit {
     font-size: 0.75rem;
     color: var(--text-muted);
     margin-left: 0.5rem;
+    white-space: nowrap;
 }
 .calc-val {
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
 .highlight-box {
     background: var(--primary-light);
@@ -182,11 +193,13 @@ body {
     border-bottom: none !important;
 }
 
-/* Lists */
+/* ======================================================
+   Commission Lists (Card B)
+   ====================================================== */
 .comm-header, .rank-header {
     display: flex;
     justify-content: space-between;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
     font-weight: 600;
     color: var(--text-muted);
@@ -197,7 +210,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem;
+    padding: 0.4rem 0.5rem;
     border-radius: var(--radius-md);
     transition: background 0.2s;
 }
@@ -207,10 +220,10 @@ body {
 .comm-label, .rank-label {
     flex: 1;
     font-weight: 500;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
 }
 .comm-input, .rank-input {
-    width: 60px;
+    width: 55px;
     background: #fff;
     border: 1px solid var(--border-light);
     border-radius: 4px;
@@ -220,7 +233,7 @@ body {
     width: 100%;
     border: none;
     text-align: center;
-    padding: 0.25rem;
+    padding: 0.2rem;
     font-family: inherit;
     font-weight: 600;
     color: var(--primary);
@@ -231,72 +244,73 @@ body {
     background: var(--primary-light);
 }
 .comm-val {
-    width: 90px;
+    width: 80px;
     text-align: right;
-    font-family: monospace;
-    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.85rem;
 }
 
 .comm-summary, .rank-summary {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 0.5rem;
+    padding: 0.6rem 0.5rem;
     border-top: 1px solid var(--border-light);
     margin-top: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
 }
 .comm-summary.total-hh {
     background: var(--gold-light);
     border-radius: var(--radius-md);
     border-top: none;
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.75rem;
     margin-bottom: 0.5rem;
 }
 .comm-summary.total-instant {
     background: var(--success-light);
     border-radius: var(--radius-md);
     border-top: none;
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.75rem;
     margin-bottom: 0.5rem;
 }
 .comm-summary.need-cover {
     background: var(--danger-light);
     border-radius: var(--radius-md);
     border-top: none;
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.75rem;
 }
 
-/* Dashboard Section Divider */
+/* ======================================================
+   SECTION 2: Section Divider + Overview Cards (4 columns)
+   ====================================================== */
 .section-divider {
     text-align: center;
     margin: 2rem 0 1.5rem;
 }
 .section-divider h2 {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
     font-weight: 700;
     color: var(--text-main);
 }
 .section-divider p {
     color: var(--text-muted);
-    font-size: 0.875rem;
+    font-size: 0.85rem;
 }
 
-/* Dashboard Cards */
 .overview-cards {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
 }
 .dash-card {
     background: var(--bg-card);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
-    padding: 1.5rem;
+    padding: 1.25rem;
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
+    gap: 0.75rem;
     border: 1px solid var(--border-light);
     transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -310,20 +324,20 @@ body {
 .dash-card.primary { border-top: 4px solid var(--primary); }
 
 .dash-card .icon {
-    font-size: 2rem;
+    font-size: 1.75rem;
     background: var(--bg-main);
-    padding: 0.5rem;
+    padding: 0.4rem;
     border-radius: var(--radius-md);
 }
 .dash-card .content { flex: 1; }
 .dash-card h3 {
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
     font-weight: 500;
     margin-bottom: 0.25rem;
 }
 .dash-card .value {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-main);
     margin-bottom: 0.25rem;
@@ -334,50 +348,77 @@ body {
 .dash-card.primary .value { color: var(--primary); }
 
 .dash-card .note {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--text-muted);
 }
 
-/* Stats Cards Grid */
+/* Break-even Banner */
+.breakeven-banner {
+    background: linear-gradient(135deg, #fffbea 0%, #fff2c8 100%);
+    border: 2px solid #ffd700;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+    text-align: center;
+    padding: 1.5rem 1.25rem;
+    margin-bottom: 1.25rem;
+}
+.breakeven-banner h4 {
+    color: #b8860b;
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+.breakeven-value {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+}
+.breakeven-sub {
+    font-size: 0.8rem;
+    color: #888;
+    font-style: italic;
+}
+
+/* Stat Cards (4-column grid) */
 .stats-cards-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
 }
-.stat-group {
+.stat-card {
     background: var(--bg-card);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-light);
     box-shadow: var(--shadow-sm);
-    overflow: hidden;
-}
-.stat-box {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border-light);
+    padding: 1.25rem 1rem;
     text-align: center;
 }
-.stat-box:last-child { border-bottom: none; }
-.stat-box h4 {
-    font-size: 0.75rem;
+.stat-card h4 {
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: var(--text-muted);
     font-weight: 600;
     margin-bottom: 0.5rem;
 }
-.stat-box .val {
-    font-size: 1.25rem;
+.stat-card .val {
+    font-size: 1.15rem;
     font-weight: 700;
     margin-bottom: 0.25rem;
 }
-.stat-box .sub {
-    font-size: 0.75rem;
+.stat-card .sub {
+    font-size: 0.7rem;
     color: var(--text-muted);
     font-style: italic;
 }
 
-/* Projection Table */
+/* ======================================================
+   SECTION 4: Projection Table
+   ====================================================== */
 .projection-table-section {
     background: var(--bg-card);
     border-radius: var(--radius-lg);
@@ -388,10 +429,10 @@ body {
 .table-header {
     background: #1f2937;
     color: white;
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1.25rem;
 }
 .table-header h3 {
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
 }
 .table-container {
@@ -401,31 +442,33 @@ body {
 .data-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
 }
 .data-table th {
     background: #f9fafb;
     color: var(--text-muted);
     font-weight: 600;
-    padding: 0.75rem 1rem;
-    text-align: right;
+    padding: 0.6rem 0.75rem;
     position: sticky;
     top: 0;
     z-index: 10;
     border-bottom: 1px solid var(--border-light);
     box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+    text-align: right;
 }
 .data-table td {
-    padding: 0.75rem 1rem;
-    text-align: right;
+    padding: 0.6rem 0.75rem;
     border-bottom: 1px solid var(--border-light);
-    font-family: monospace;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
 }
-.data-table th:first-child, .data-table td:first-child,
-.data-table th:last-child, .data-table td:last-child {
-    text-align: center;
-    font-family: 'Inter', sans-serif;
-}
+/* Column 1 (Ngày) — left align */
+.data-table th:nth-child(1),
+.data-table td:nth-child(1) { text-align: left; }
+/* Column 6 (Trạng Thái) — left align */
+.data-table th:nth-child(6),
+.data-table td:nth-child(6) { text-align: left; }
+
 .data-table tbody tr:hover {
     background-color: var(--bg-main);
 }
@@ -437,11 +480,14 @@ body {
     font-weight: 500;
 }
 
-/* Responsiveness */
-@media (max-width: 1200px) {
+/* ======================================================
+   Responsiveness
+   ====================================================== */
+@media (max-width: 1100px) {
     .top-row { grid-template-columns: 1fr 1fr; }
     .card-c { grid-column: 1 / -1; }
     .overview-cards { grid-template-columns: repeat(2, 1fr); }
+    .stats-cards-grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 768px) {
     .top-row { grid-template-columns: 1fr; }

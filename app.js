@@ -7,14 +7,170 @@ const formatPercent = (num) => {
     return (num * 100).toFixed(1) + '%';
 };
 
+// --- FIREBASE SETUP ---
+// Cấu hình Firebase dự án của bạn
+const firebaseConfig = {
+    apiKey: "AIzaSyC1VvOXN8vBlOOXgyuKRz4eE0uYj1kfRgk",
+    authDomain: "luckyshopanalytics.web.app",
+    projectId: "luckyshopanalytics",
+    storageBucket: "luckyshopanalytics.firebasestorage.app",
+    messagingSenderId: "552187553603",
+    appId: "1:552187553603:web:8a8650cd1808420209f1f6",
+    measurementId: "G-C42MCG7BLQ"
+};
+
+// Khởi tạo Firebase nếu thư viện đã được load
+if (typeof firebase !== 'undefined') {
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    const btnLogin = document.getElementById('btn_login_admin');
+    const btnLogout = document.getElementById('btn_logout_admin');
+    const loginModal = document.getElementById('login_modal');
+    const btnDoLogin = document.getElementById('btn_do_login');
+    const btnDoLoginGoogle = document.getElementById('btn_do_login_google');
+    const btnCloseLogin = document.getElementById('btn_close_login');
+    const emailInput = document.getElementById('admin_email');
+    const pwdInput = document.getElementById('admin_pwd');
+    const loginError = document.getElementById('login_error');
+    const btnSaveConfig = document.getElementById('btn_save_config');
+    const adminToggle = document.getElementById('admin_mode_toggle');
+
+    if (btnLogin) btnLogin.addEventListener('click', () => loginModal.style.display = 'flex');
+    if (btnCloseLogin) btnCloseLogin.addEventListener('click', () => {
+        loginModal.style.display = 'none';
+        loginError.style.display = 'none';
+    });
+
+    if (btnDoLogin) {
+        btnDoLogin.addEventListener('click', () => {
+            const email = emailInput.value;
+            const pwd = pwdInput.value;
+            auth.signInWithEmailAndPassword(email, pwd)
+                .then((result) => {
+                    if (result.user && result.user.email !== 'vinh.ngtienmdb@gmail.com') {
+                        auth.signOut();
+                        loginError.innerText = "Lỗi: Tài khoản không có quyền Admin.";
+                        loginError.style.display = 'block';
+                    } else {
+                        loginModal.style.display = 'none';
+                        loginError.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    loginError.innerText = "Đăng nhập thất bại: " + error.message;
+                    loginError.style.display = 'block';
+                });
+        });
+    }
+
+    if (btnDoLoginGoogle) {
+        btnDoLoginGoogle.addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    if (result.user && result.user.email !== 'vinh.ngtienmdb@gmail.com') {
+                        auth.signOut();
+                        loginError.innerText = "Lỗi: Tài khoản không có quyền Admin.";
+                        loginError.style.display = 'block';
+                    } else {
+                        loginModal.style.display = 'none';
+                        loginError.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    loginError.innerText = "Đăng nhập thất bại: " + error.message;
+                    loginError.style.display = 'block';
+                });
+        });
+    }
+
+    if (btnLogout) {
+        btnLogout.addEventListener('click', () => auth.signOut());
+    }
+
+    auth.onAuthStateChanged(user => {
+        if (user && user.email === 'vinh.ngtienmdb@gmail.com') {
+            if (btnLogin) btnLogin.style.display = 'none';
+            if (btnLogout) btnLogout.style.display = 'flex';
+            if (adminToggle) {
+                adminToggle.checked = true;
+                if(typeof toggleAdminMode === 'function') toggleAdminMode();
+            }
+        } else {
+            if (btnLogin) btnLogin.style.display = 'flex';
+            if (btnLogout) btnLogout.style.display = 'none';
+            if (adminToggle) {
+                adminToggle.checked = false;
+                if(typeof toggleAdminMode === 'function') toggleAdminMode();
+            }
+            if (user && user.email !== 'vinh.ngtienmdb@gmail.com') {
+                auth.signOut();
+            }
+        }
+    });
+
+    db.collection('configs').doc('main').onSnapshot((doc) => {
+        if (doc.exists) {
+            const data = doc.data();
+            const setVal = (id, val) => { if(val !== undefined && document.getElementById(id)) document.getElementById(id).value = val; };
+            setVal('a_max_tgd', data.a_max_tgd);
+            setVal('a_max_gd', data.a_max_gd);
+            setVal('a_max_ql', data.a_max_ql);
+            setVal('a_max_nv', data.a_max_nv);
+            setVal('a_max_direct', data.a_max_direct);
+            setVal('a_max_indirect', data.a_max_indirect);
+            setVal('p_b_rate1', data.p_b_rate1);
+            setVal('p_b_rate2', data.p_b_rate2);
+            setVal('p_b_rate3', data.p_b_rate3);
+            setVal('p_b_rate4', data.p_b_rate4);
+            setVal('p_b_rate5', data.p_b_rate5);
+            setVal('p_b_rate6', data.p_b_rate6);
+            setVal('p_b_rate7', data.p_b_rate7);
+            if(typeof calculate === 'function') calculate();
+        }
+    });
+
+    if (btnSaveConfig) {
+        btnSaveConfig.addEventListener('click', () => {
+            if (!auth.currentUser) {
+                alert("Bạn cần đăng nhập để lưu cấu hình!");
+                return;
+            }
+            const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
+            const newConfig = {
+                a_max_tgd: getVal('a_max_tgd'),
+                a_max_gd: getVal('a_max_gd'),
+                a_max_ql: getVal('a_max_ql'),
+                a_max_nv: getVal('a_max_nv'),
+                a_max_direct: getVal('a_max_direct'),
+                a_max_indirect: getVal('a_max_indirect'),
+                p_b_rate1: getVal('p_b_rate1'),
+                p_b_rate2: getVal('p_b_rate2'),
+                p_b_rate3: getVal('p_b_rate3'),
+                p_b_rate4: getVal('p_b_rate4'),
+                p_b_rate5: getVal('p_b_rate5'),
+                p_b_rate6: getVal('p_b_rate6'),
+                p_b_rate7: getVal('p_b_rate7')
+            };
+
+            db.collection('configs').doc('main').set(newConfig, { merge: true })
+                .then(() => alert("Lưu cấu hình thành công! Mọi người dùng trên hệ thống sẽ tự động thấy hệ số mới."))
+                .catch(err => alert("Lỗi khi lưu: " + err.message));
+        });
+    }
+}
+// --- END FIREBASE SETUP ---
+
 // Main DOM Elements
 const inputs = {
     p_price: document.getElementById('p_price'),
     p_turns: document.getElementById('p_turns'),
-    p_resellRate: document.getElementById('p_resellRate'),
+    p_choice_take: document.getElementById('p_choice_take'),
+    p_choice_resell: document.getElementById('p_choice_resell'),
     p_dailyLuckyRate: document.getElementById('p_dailyLuckyRate'),
     p_luckyMul: document.getElementById('p_luckyMul'),
-    p_newTickets: document.getElementById('p_newTickets'),
     p_b_rate1: document.getElementById('p_b_rate1'),
     p_b_rate2: document.getElementById('p_b_rate2'),
     p_b_rate3: document.getElementById('p_b_rate3'),
@@ -23,16 +179,17 @@ const inputs = {
     p_b_rate6: document.getElementById('p_b_rate6'),
     p_b_rate7: document.getElementById('p_b_rate7'),
 
-    c_dist_tgd: document.getElementById('c_dist_tgd'),
-    c_rank_tgd: document.getElementById('c_rank_tgd'),
-    c_dist_gd: document.getElementById('c_dist_gd'),
-    c_rank_gd: document.getElementById('c_rank_gd'),
-    c_dist_ql: document.getElementById('c_dist_ql'),
-    c_rank_ql: document.getElementById('c_rank_ql'),
-    c_dist_nv: document.getElementById('c_dist_nv'),
-    c_rank_nv: document.getElementById('c_rank_nv'),
-    c_dist_kh: document.getElementById('c_dist_kh'),
-    c_rank_kh: document.getElementById('c_rank_kh')
+    admin_mode_toggle: document.getElementById('admin_mode_toggle'),
+    u_rank: document.getElementById('u_rank'),
+    u_sub_gd: document.getElementById('u_sub_gd'),
+    u_sub_ql: document.getElementById('u_sub_ql'),
+    u_sub_nv: document.getElementById('u_sub_nv'),
+    a_max_nv: document.getElementById('a_max_nv'),
+    a_max_ql: document.getElementById('a_max_ql'),
+    a_max_gd: document.getElementById('a_max_gd'),
+    a_max_tgd: document.getElementById('a_max_tgd'),
+    a_max_direct: document.getElementById('a_max_direct'),
+    a_max_indirect: document.getElementById('a_max_indirect')
 };
 
 // Calculated DOM Elements
@@ -43,8 +200,7 @@ const calc = {
     c_totalInvest: document.getElementById('c_totalInvest'),
     c_luckyBalance: document.getElementById('c_luckyBalance'),
 
-    c_dist_total: document.getElementById('c_dist_total'),
-    c_rank_total: document.getElementById('c_rank_total'),
+    // c_dist removed
 
     b_amt1: document.getElementById('b_amt1'),
     b_amt2: document.getElementById('b_amt2'),
@@ -66,14 +222,10 @@ const calc = {
     d_totalHH: document.getElementById('d_totalHH'),
     d_needToCover: document.getElementById('d_needToCover'),
 
-    s_instantRate: document.getElementById('s_instantRate'),
     s_dailyLixi1: document.getElementById('s_dailyLixi1'),
     s_linearDays: document.getElementById('s_linearDays'),
-    s_coverRate: document.getElementById('s_coverRate'),
-    s_dailyTickets: document.getElementById('s_dailyTickets'),
     s_accLixi: document.getElementById('s_accLixi'),
     s_initialBal: document.getElementById('s_initialBal'),
-    s_netDailyLixi1: document.getElementById('s_netDailyLixi1'),
     s_roi: document.getElementById('s_roi'),
 
     timelineBody: document.getElementById('timelineBody')
@@ -83,30 +235,69 @@ const formatNumberTable = (num) => new Intl.NumberFormat('vi-VN').format(Math.ro
 
 const calculate = () => {
     // Read Table A Inputs
-    const price = parseFloat(inputs.p_price.value) || 0;
+    const priceStr = inputs.p_price.value.replace(/\./g, '');
+    const price = parseFloat(priceStr) || 0;
     const turns = parseFloat(inputs.p_turns.value) || 0;
-    const resellRate = (parseFloat(inputs.p_resellRate.value) || 0) / 100;
+    const isTake = inputs.p_choice_take && inputs.p_choice_take.checked;
+    const resellRate = isTake ? 0 : 0.8;
     const dailyLuckyRate = (parseFloat(inputs.p_dailyLuckyRate.value) || 0) / 100;
     const luckyMul = parseFloat(inputs.p_luckyMul.value) || 0;
-    const newTickets = parseFloat(inputs.p_newTickets.value) || 0;
+    const newTickets = 0;
 
-    // Read Table C Inputs
-    const d_tgd = (parseFloat(inputs.c_dist_tgd.value) || 0) / 100;
-    const r_tgd = (parseFloat(inputs.c_rank_tgd.value) || 0) / 100;
-    const d_gd = (parseFloat(inputs.c_dist_gd.value) || 0) / 100;
-    const r_gd = (parseFloat(inputs.c_rank_gd.value) || 0) / 100;
-    const d_ql = (parseFloat(inputs.c_dist_ql.value) || 0) / 100;
-    const r_ql = (parseFloat(inputs.c_rank_ql.value) || 0) / 100;
-    const d_nv = (parseFloat(inputs.c_dist_nv.value) || 0) / 100;
-    const r_nv = (parseFloat(inputs.c_rank_nv.value) || 0) / 100;
-    const d_kh = (parseFloat(inputs.c_dist_kh.value) || 0) / 100;
-    const r_kh = (parseFloat(inputs.c_rank_kh.value) || 0) / 100;
+    const isAdmin = inputs.admin_mode_toggle && inputs.admin_mode_toggle.checked;
 
-    const total_d = d_tgd + d_gd + d_ql + d_nv + d_kh;
-    const total_r = r_tgd + r_gd + r_ql + r_nv + r_kh;
+    if (!isAdmin && inputs.u_rank) {
+        // User Mode logic
+        const rank = inputs.u_rank.value;
+        
+        let r1 = 0, r2 = 0, r3 = 0, r4 = 0, r5 = 0, r6 = 0, r7 = 0;
+        
+        // Distribution commissions are always given in User Mode
+        r2 = parseFloat(inputs.a_max_direct.value) || 0;
+        r3 = parseFloat(inputs.a_max_indirect.value) || 0;
+        
+        // Rank commissions
+        const max_nv = parseFloat(inputs.a_max_nv.value) || 0;
+        const max_ql = parseFloat(inputs.a_max_ql.value) || 0;
+        const max_gd = parseFloat(inputs.a_max_gd.value) || 0;
+        const max_tgd = parseFloat(inputs.a_max_tgd.value) || 0;
+        
+        let rankTarget = 0; // 4=nv, 5=ql, 6=gd, 7=tgd
+        if (rank === 'nv') rankTarget = 4;
+        else if (rank === 'ql') rankTarget = 5;
+        else if (rank === 'gd') rankTarget = 6;
+        else if (rank === 'tgd') rankTarget = 7;
+        
+        // Build the chain of participating ranks
+        let participatingRanks = [];
+        if (rankTarget >= 4) participatingRanks.push({ id: 4, max: max_nv, active: (rankTarget === 4 || inputs.u_sub_nv.checked) });
+        if (rankTarget >= 5) participatingRanks.push({ id: 5, max: max_ql, active: (rankTarget === 5 || inputs.u_sub_ql.checked) });
+        if (rankTarget >= 6) participatingRanks.push({ id: 6, max: max_gd, active: (rankTarget === 6 || inputs.u_sub_gd.checked) });
+        if (rankTarget >= 7) participatingRanks.push({ id: 7, max: max_tgd, active: (rankTarget === 7) });
 
-    calc.c_dist_total.innerText = formatPercent(total_d);
-    calc.c_rank_total.innerText = formatPercent(total_r);
+        // Calculate differential commissions from bottom to top
+        let currentDeduction = 0;
+        for (let i = 0; i < participatingRanks.length; i++) {
+            let p = participatingRanks[i];
+            if (p.active) {
+                let commission = Math.max(0, p.max - currentDeduction);
+                if (p.id === 4) r4 = commission;
+                if (p.id === 5) r5 = commission;
+                if (p.id === 6) r6 = commission;
+                if (p.id === 7) r7 = commission;
+                currentDeduction = p.max; // The next active rank above will deduct this
+            }
+        }
+        
+        // Update the inputs and display spans so UI reflects them
+        inputs.p_b_rate1.value = r1; const d1 = document.getElementById('d_b_rate1'); if(d1) d1.innerText = r1 + '%';
+        inputs.p_b_rate2.value = r2; const d2 = document.getElementById('d_b_rate2'); if(d2) d2.innerText = r2 + '%';
+        inputs.p_b_rate3.value = r3; const d3 = document.getElementById('d_b_rate3'); if(d3) d3.innerText = r3 + '%';
+        inputs.p_b_rate4.value = r4; const d4 = document.getElementById('d_b_rate4'); if(d4) d4.innerText = r4 + '%';
+        inputs.p_b_rate5.value = r5; const d5 = document.getElementById('d_b_rate5'); if(d5) d5.innerText = r5 + '%';
+        inputs.p_b_rate6.value = r6; const d6 = document.getElementById('d_b_rate6'); if(d6) d6.innerText = r6 + '%';
+        inputs.p_b_rate7.value = r7; const d7 = document.getElementById('d_b_rate7'); if(d7) d7.innerText = r7 + '%';
+    }
 
     // Calculate Table A
     const unitPrice = price / 5;
@@ -168,17 +359,13 @@ const calculate = () => {
     calc.d_totalHH.innerText = formatVND(totalHH);
     calc.d_needToCover.innerText = formatVND(needToCover);
 
-    // Update Stats Grid
-    calc.s_instantRate.innerText = formatPercent(totalInvest ? instantTotal / totalInvest : 0);
-    calc.s_coverRate.innerText = formatPercent(totalInvest ? needToCover / totalInvest : 0);
+    // Update UI Stats
     calc.s_initialBal.innerText = formatVND(luckyBalance);
 
     const dailyLixi1 = luckyBalance * dailyLuckyRate;
     calc.s_dailyLixi1.innerText = formatVND(dailyLixi1);
-    calc.s_dailyTickets.innerText = formatVND(newTickets);
-    
+
     const netDaily1 = dailyLixi1 - newTickets;
-    calc.s_netDailyLixi1.innerText = formatVND(netDaily1);
 
     if (netDaily1 > 0) {
         const daysToCover = Math.ceil(needToCover / netDaily1);
@@ -206,7 +393,8 @@ const calculate = () => {
         let status = '';
         let rowClass = '';
         if (totalCash >= needToCover) {
-            status = '✅ Đã hòa vốn';
+            const profit = totalCash - needToCover;
+            status = `✅ Đã hòa vốn (Lãi: ${formatNumberTable(profit)})`;
             rowClass = 'row-success';
         } else {
             status = `⏳ Còn thiếu ${formatNumberTable(needToCover - totalCash)}`;
@@ -217,8 +405,6 @@ const calculate = () => {
                 <td>${day}</td>
                 <td>${formatNumberTable(currBalance)}</td>
                 <td>${formatNumberTable(genLixi)}</td>
-                <td>${formatNumberTable(newTickets)}</td>
-                <td>${formatNumberTable(commGenerated)}</td>
                 <td>${formatNumberTable(totalCash)}</td>
                 <td>${formatNumberTable(endBalance)}</td>
                 <td style="text-align: left;">${status}</td>
@@ -231,7 +417,7 @@ const calculate = () => {
 
     // Post-loop stats
     calc.s_accLixi.innerText = formatVND(totalCash);
-    const roi = totalInvest > 0 ? (totalCash - needToCover) / totalInvest : 0;
+    const roi = needToCover > 0 ? (totalCash - needToCover) / needToCover : 0;
     calc.s_roi.innerText = formatPercent(roi);
     if (roi >= 0) {
         calc.s_roi.className = "stat-val text-green";
@@ -240,12 +426,82 @@ const calculate = () => {
     }
 };
 
+// UI Logic for User Mode
+const updateSubordinateVisibility = () => {
+    if (!inputs.u_rank) return;
+    const rank = inputs.u_rank.value;
+    const gdChk = document.getElementById('u_chk_gd');
+    const qlChk = document.getElementById('u_chk_ql');
+    const nvChk = document.getElementById('u_chk_nv');
+    
+    if(rank === 'tgd') {
+        gdChk.style.display = 'block';
+        qlChk.style.display = 'block';
+        nvChk.style.display = 'block';
+    } else if (rank === 'gd') {
+        gdChk.style.display = 'none'; inputs.u_sub_gd.checked = false;
+        qlChk.style.display = 'block';
+        nvChk.style.display = 'block';
+    } else if (rank === 'ql') {
+        gdChk.style.display = 'none'; inputs.u_sub_gd.checked = false;
+        qlChk.style.display = 'none'; inputs.u_sub_ql.checked = false;
+        nvChk.style.display = 'block';
+    } else {
+        gdChk.style.display = 'none'; inputs.u_sub_gd.checked = false;
+        qlChk.style.display = 'none'; inputs.u_sub_ql.checked = false;
+        nvChk.style.display = 'none'; inputs.u_sub_nv.checked = false;
+    }
+    calculate();
+};
+
+const toggleAdminMode = () => {
+    if (!inputs.admin_mode_toggle) return;
+    const isAdmin = inputs.admin_mode_toggle.checked;
+    const adminCards = document.querySelectorAll('.admin-only-card');
+    const userCards = document.querySelectorAll('.user-only-card');
+    
+    adminCards.forEach(c => c.style.display = isAdmin ? 'block' : 'none');
+    userCards.forEach(c => c.style.display = isAdmin ? 'none' : 'block');
+    
+    // Toggle Card B inputs vs display spans
+    const adminInputs = document.querySelectorAll('.admin-input-only');
+    const userDisplays = document.querySelectorAll('.user-display-only');
+    
+    adminInputs.forEach(el => el.style.display = isAdmin ? 'block' : 'none');
+    userDisplays.forEach(el => el.style.display = isAdmin ? 'none' : 'block');
+    
+    calculate();
+};
+
 // Add event listeners to all inputs to trigger recalculation
 Object.values(inputs).forEach(input => {
-    if(input) {
+    if(input && input.tagName) {
         input.addEventListener('input', calculate);
+        if (input.type === 'checkbox' || input.type === 'radio') {
+            input.addEventListener('change', calculate);
+        }
     }
 });
 
-// Initial calculation
-window.addEventListener('load', calculate);
+// Specific event listeners
+if (inputs.admin_mode_toggle) inputs.admin_mode_toggle.addEventListener('change', toggleAdminMode);
+if (inputs.u_rank) inputs.u_rank.addEventListener('change', updateSubordinateVisibility);
+
+if (inputs.p_price) {
+    inputs.p_price.addEventListener('input', function(e) {
+        let val = e.target.value.replace(/\D/g, '');
+        if (val !== '') {
+            e.target.value = new Intl.NumberFormat('vi-VN').format(parseInt(val, 10));
+        } else {
+            e.target.value = '';
+        }
+        calculate();
+    });
+}
+
+// Initial setup
+window.addEventListener('load', () => {
+    if (inputs.u_rank) updateSubordinateVisibility();
+    if (inputs.admin_mode_toggle) toggleAdminMode();
+    calculate();
+});
